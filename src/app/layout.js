@@ -16,8 +16,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Head>
+        <meta name="google-site-verification" content="1RtcwMibRWFeU7erFruYLbMAT4fYlLwP0lRJx29i6sk" />
         <link rel="icon" href="/favicon.ico" sizes="64x64" />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        
       </Head>
       <body className="bg-white dark:bg-gray-950 text-black dark:text-white">
         

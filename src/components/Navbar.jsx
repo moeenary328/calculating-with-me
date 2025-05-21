@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import {
   HiOutlineSearch,
@@ -22,11 +22,12 @@ import {
 } from 'react-icons/hi';
 
 export default function Navbar() {
-  const [mounted, setMounted] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef();
 
+  // Set mounted to true after component has mounted
   useEffect(() => {
     setMounted(true);
     const handleClickOutside = (e) => {
@@ -34,10 +35,12 @@ export default function Navbar() {
         setOpenDropdown(null);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Don't render anything until the component is mounted
   if (!mounted) return null;
 
   const dropdowns = {
@@ -60,9 +63,6 @@ export default function Navbar() {
       { name: 'Extra Space Remover', icon: HiClipboardCheck },
       { name: 'Duplicate Line Remover', icon: HiDocumentAdd },
       { name: 'Reverse Text', icon: HiDocumentText },
-      // Removed these two:
-      // { name: 'Remove Duplicate Lines', icon: HiClipboardList },
-      // { name: 'Remove Extra Spaces', icon: HiReceiptRefund },
       { name: 'Uppercase to Lowercase', icon: HiViewBoards }
     ]
   };
