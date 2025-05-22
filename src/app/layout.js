@@ -1,7 +1,7 @@
 // app/layout.jsx
 import './globals.css'
+import Script from 'next/script'
 
-// ✅ Import all components correctly
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import Footer from '../components/Footer'
@@ -10,13 +10,28 @@ export const metadata = {
   title: 'Calculating with Me',
   description: 'Responsive Layout',
   verification: {
-    google: '1RtcwMibRWFeU7erFruYLbMAT4fYlLwP0lRJx29i6sk', // ✅ Google Search Console meta tag
+    google: '1RtcwMibRWFeU7erFruYLbMAT4fYlLwP0lRJx29i6sk',
   },
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* ✅ Google Analytics Script */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-B9ZHZ1K4J5"
+        />
+        <Script id="google-analytics">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-B9ZHZ1K4J5');
+          `}
+        </Script>
+      </head>
       <body className="bg-white dark:bg-gray-950 text-black dark:text-white">
         
         {/* Navbar */}
