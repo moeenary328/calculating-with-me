@@ -87,8 +87,8 @@ export default function ContactPage() {
               {
                 icon: <FiMapPin className="h-4 w-4 sm:h-5 sm:w-5" />,
                 title: 'Visit Us',
-                detail1: 'Kot Addu, Punjab',
-                detail2: 'Near Sheikh Umer, Sinswan',
+                detail1: 'Kot Addu, Punjab-Pakistan',
+                detail2: 'Near Sheikh Umer, Sinawan',
                 color: 'bg-purple-100 text-purple-600'
               }
             ].map((info, idx) => (

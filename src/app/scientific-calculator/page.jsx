@@ -8,44 +8,177 @@ const ProScientificCalculator = () => {
   const [result, setResult] = useState('');
   const [history, setHistory] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
+  const [error, setError] = useState('');
+
+  // Constants for currency conversion
+  const EXCHANGE_RATE = 280;
+
+  // Validate and sanitize input expression
+  const validateExpression = (expr) => {
+    // Check for empty input
+    if (!expr) return { valid: false, message: 'Empty expression' };
+
+    // Check for invalid characters
+    const invalidChars = expr.match(/[^0-9+\-*\/%^().esincoqrtalπ√PKRUSD]/g);
+    if (invalidChars) {
+      return { 
+        valid: false, 
+        message: `Invalid characters: ${invalidChars.join(', ')}`
+      };
+    }
+
+    // Check balanced parentheses
+    const stack = [];
+    for (let char of expr) {
+      if (char === '(') stack.push(char);
+      if (char === ')') {
+        if (stack.length === 0) {
+          return { valid: false, message: 'Unbalanced parentheses' };
+        }
+        stack.pop();
+      }
+    }
+    if (stack.length > 0) {
+      return { valid: false, message: 'Unbalanced parentheses' };
+    }
+
+    return { valid: true };
+  };
+
+  // Safe evaluation function
+  const safeEvaluate = (expr) => {
+    const validation = validateExpression(expr);
+    if (!validation.valid) {
+      setError(validation.message);
+      return 'Error';
+    }
+
+    try {
+      let sanitized = expr
+        .replace(/π/g, Math.PI.toString())
+        .replace(/e/g, Math.E.toString())
+        .replace(/√/g, 'Math.sqrt')
+        .replace(/sin/g, 'Math.sin')
+        .replace(/cos/g, 'Math.cos')
+        .replace(/tan/g, 'Math.tan')
+        .replace(/log/g, 'Math.log10')
+        .replace(/ln/g, 'Math.log')
+        .replace(/\^/g, '**');
+
+      // eslint-disable-next-line no-new-func
+      const evaluated = new Function('"use strict"; return (' + sanitized + ')')();
+
+      if (Number.isNaN(evaluated)) {
+        setError('Invalid mathematical operation');
+        return 'Error';
+      }
+      if (!Number.isFinite(evaluated)) {
+        setError('Division by zero or overflow');
+        return 'Error';
+      }
+
+      setError('');
+      return evaluated.toString();
+    } catch (err) {
+      setError(err.message);
+      return 'Error';
+    }
+  };
 
   const handleClick = (val) => {
+    setError('');
+
     if (val === 'C') {
+      // Clear all
       setInput('');
       setResult('');
-    } else if (val === 'DEL') {
-      setInput((prev) => prev.slice(0, -1));
-    } else if (val === '=') {
-      try {
-        let expression = input
-          .replace(/π/g, Math.PI.toString())
-          .replace(/e/g, Math.E.toString())
-          .replace(/√/g, 'Math.sqrt')
-          .replace(/sin/g, 'Math.sin')
-          .replace(/cos/g, 'Math.cos')
-          .replace(/tan/g, 'Math.tan')
-          .replace(/log/g, 'Math.log10')
-          .replace(/ln/g, 'Math.log')
-          .replace(/\^/g, '**');
-
-        const evaluated = Function('"use strict"; return (' + expression + ')')();
-        const answer = evaluated.toString();
-        setResult(answer);
-        setHistory((prev) => [...prev.slice(-4), `${input} = ${answer}`]);
-      } catch {
-        setResult('Error');
-      }
-    } else if (val === 'PKR>USD') {
-      const usd = (parseFloat(input) / 280).toFixed(2);
-      setResult(`${usd} USD`);
-      setHistory((prev) => [...prev.slice(-4), `${input} PKR = ${usd} USD`]);
-    } else if (val === 'USD>PKR') {
-      const pkr = (parseFloat(input) * 280).toFixed(0);
-      setResult(`${pkr} PKR`);
-      setHistory((prev) => [...prev.slice(-4), `${input} USD = ${pkr} PKR`]);
-    } else {
-      setInput((prev) => prev + val);
+      return;
     }
+
+    if (val === 'DEL') {
+      // Delete last character
+      setInput(prev => {
+        const newInput = prev.slice(0, -1);
+        setResult(newInput ? safeEvaluate(newInput) : '');
+        return newInput;
+      });
+      return;
+    }
+
+    if (val === '=') {
+      // Calculate result
+      if (!input) {
+        setError('No input to evaluate');
+        return;
+      }
+
+      const answer = safeEvaluate(input);
+      setResult(answer);
+      
+      if (answer !== 'Error') {
+        setHistory(prev => [...prev.slice(-4), `${input} = ${answer}`]);
+      }
+      return;
+    }
+
+    if (val === 'PKR>USD') {
+      // Currency conversion
+      if (!input || isNaN(input)) {
+        setError('Invalid PKR amount');
+        return;
+      }
+      const usd = (parseFloat(input) / EXCHANGE_RATE).toFixed(2);
+      setResult(`${usd} USD`);
+      setHistory(prev => [...prev.slice(-4), `${input} PKR = ${usd} USD`]);
+      return;
+    }
+
+    if (val === 'USD>PKR') {
+      // Currency conversion
+      if (!input || isNaN(input)) {
+        setError('Invalid USD amount');
+        return;
+      }
+      const pkr = (parseFloat(input) * EXCHANGE_RATE).toFixed(0);
+      setResult(`${pkr} PKR`);
+      setHistory(prev => [...prev.slice(-4), `${input} USD = ${pkr} PKR`]);
+      return;
+    }
+
+    // Prevent invalid operator sequences
+    const lastChar = input.slice(-1);
+    const operators = ['+', '-', '*', '/', '^', '%'];
+    
+    if (operators.includes(val)) {
+      // Don't allow operators at start (except minus)
+      if (!input && val !== '-') return;
+      
+      // Don't allow multiple operators
+      if (operators.includes(lastChar)) return;
+    }
+
+    // Prevent multiple decimals in same number
+    if (val === '.') {
+      const parts = input.split(/[\+\-\*\/\^\%]/);
+      const lastPart = parts[parts.length - 1];
+      if (lastPart.includes('.')) return;
+    }
+
+    // Prevent invalid function sequences
+    // if (val.match(/[a-z]/) {
+    //   const lastCharIsLetter = input.slice(-1).match(/[a-z]/);
+    //   if (lastCharIsLetter && !val.match(/^(sin|cos|tan|log|ln|√)/)) return;
+    // }
+    if (val.match(/[a-z]/)) {
+  const lastCharIsLetter = input.slice(-1).match(/[a-z]/);
+  if (lastCharIsLetter && !val.match(/^(sin|cos|tan|log|ln|√)/)) return;
+}
+
+    setInput(prev => {
+      const newInput = prev + val;
+      setResult(safeEvaluate(newInput));
+      return newInput;
+    });
   };
 
   const handleClearHistory = () => {
@@ -73,10 +206,19 @@ const ProScientificCalculator = () => {
 
         <h2 className={`text-2xl font-bold text-center mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>📐 Pro Scientific Calculator</h2>
 
+        {/* Error Display */}
+        {error && (
+          <div className={`p-2 mb-2 rounded-lg text-center ${darkMode ? 'bg-red-900/50 text-red-200' : 'bg-red-100 text-red-800'}`}>
+            {error}
+          </div>
+        )}
+
         {/* Display Section */}
         <div className={`p-4 mb-4 rounded-xl ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'} shadow-inner`}>
-          <div className="text-lg break-words">{input || '0'}</div>
-          <div className="text-md text-green-500 mt-2">{result}</div>
+          <div className="text-lg break-words min-h-6">{input || '0'}</div>
+          <div className={`text-md mt-2 ${result === 'Error' ? 'text-red-500' : 'text-green-500'}`}>
+            {result || (input ? '=' : '')}
+          </div>
         </div>
 
         {/* Button Section */}
@@ -86,11 +228,12 @@ const ProScientificCalculator = () => {
               <button
                 key={idx}
                 onClick={() => handleClick(btn)}
-                className={`p-3 rounded-full shadow-md transition-all duration-200
-                  ${darkMode
-                    ? 'bg-gray-700 text-blue-300 hover:bg-blue-600'
-                    : 'bg-white text-red-600 hover:bg-blue-200'
-                  }`}
+                className={`p-3 rounded-full shadow-md transition-all duration-200 flex items-center justify-center
+                  ${darkMode ? 'bg-gray-700 hover:bg-blue-600' : 'bg-white hover:bg-blue-200'}
+                  ${['C', 'DEL'].includes(btn) ? (darkMode ? 'text-red-400' : 'text-red-600') : ''}
+                  ${['=', 'PKR>USD', 'USD>PKR'].includes(btn) ? (darkMode ? 'text-green-400' : 'text-green-600') : ''}
+                  ${!['C', 'DEL', '=', 'PKR>USD', 'USD>PKR'].includes(btn) ? (darkMode ? 'text-blue-300' : 'text-blue-600') : ''}
+                `}
               >
                 {btn === 'DEL' ? <FiDelete /> : btn === 'π' ? <PiPiBold /> : btn}
               </button>
@@ -152,12 +295,12 @@ const ProScientificCalculator = () => {
           <ul className="list-disc pl-5 space-y-1 mb-3">
             <li><strong>PKR to USD</strong>: Enter amount in PKR and press PKR&gt;USD</li>
             <li><strong>USD to PKR</strong>: Enter amount in USD and press USD&gt;PKR</li>
-            <li>The calculator uses current exchange rate (1 USD ≈ 280 PKR)</li>
+            <li>The calculator uses current exchange rate (1 USD ≈ {EXCHANGE_RATE} PKR)</li>
           </ul>
           <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} mb-3`}>
             <p className="font-mono text-sm">Example conversions:</p>
-            <p className="font-mono text-sm">5000 PKR → 17.86 USD</p>
-            <p className="font-mono text-sm">100 USD → 28000 PKR</p>
+            <p className="font-mono text-sm">5000 PKR → {(5000/EXCHANGE_RATE).toFixed(2)} USD</p>
+            <p className="font-mono text-sm">100 USD → {100*EXCHANGE_RATE} PKR</p>
           </div>
           <p className="text-sm italic">Note: Exchange rates may vary in real markets</p>
         </div>

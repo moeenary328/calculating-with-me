@@ -22,7 +22,7 @@ export default function HomePage() {
       >
         {/* Heading */}
         <motion.h1
-          className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-snug bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-transparent bg-clip-text"
+          className="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-snug bg-gradient-to-r from-pink-600 via-gray-700 to-amber-700 text-transparent bg-clip-text"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
