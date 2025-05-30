@@ -86,9 +86,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* ✅ Google AdSense Verification & Script */}
-        <meta name="google-adsense-account" content="ca-pub-4303081538687883" />
-        
+        {/* ✅ Google Site Verification */}
+        <meta
+          name="google-site-verification"
+          content="1RtcwMibRWFeU7erFruYLbMAT4fYlLwP0lRJx29i6sk"
+        />
+
+        {/* ✅ Google AdSense Publisher Account */}
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-4303081538687883"
+        />
+
         {/* ✅ Google Analytics Script */}
         <Script
           async
@@ -102,44 +111,28 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-B9ZHZ1K4J5');
           `}
         </Script>
-
-        {/* ✅ Main AdSense Script */}
-        <Script 
-          id="adsbygoogle-init"
-          strategy="afterInteractive"
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4303081538687883"
-          crossOrigin="anonymous"
-        />
-
-        {/* ✅ Additional AdSense Configuration */}
-        <Script id="adsbygoogle-config">
-          {`
-            (adsbygoogle = window.adsbygoogle || []).push({
-              google_ad_client: "ca-pub-4303081538687883",
-              enable_page_level_ads: true,
-              overlays: {bottom: true}
-            });
-          `}
-        </Script>
       </head>
+
       <body className="bg-white dark:bg-gray-950 text-black dark:text-white">
+        {/* ✅ Navbar */}
         <Navbar />
-        
+
+        {/* ✅ Layout Structure */}
         <div className="flex min-h-screen">
+          {/* Sidebar */}
           <div className="hidden md:block">
             <Sidebar />
           </div>
 
+          {/* Main Content */}
           <main className="flex-1 bg-gray-100 dark:bg-gray-900">
             <div className="flex items-center justify-center min-h-screen p-6">
-              <div className="w-full max-w-4xl text-center">
-                {children}
-              </div>
+              <div className="w-full max-w-4xl text-center">{children}</div>
             </div>
           </main>
         </div>
 
+        {/* ✅ Footer */}
         <Footer />
       </body>
     </html>
