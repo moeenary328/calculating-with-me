@@ -40,12 +40,12 @@ export default function RootLayout({ children }) {
         {/* Page Structure */}
         <div className="flex min-h-screen">
           
-          {/* Sidebar - Hidden on mobile, shown on md screens and above */}
+          {/* Sidebar */}
           <div className="hidden md:block">
             <Sidebar />
           </div>
 
-          {/* Main Content Area */}
+          {/* Main Content */}
           <main className="flex-1 bg-gray-100 dark:bg-gray-900">
             <div className="flex items-center justify-center min-h-screen p-6">
               <div className="w-full max-w-4xl text-center">
@@ -53,7 +53,18 @@ export default function RootLayout({ children }) {
               </div>
             </div>
           </main>
+        </div>
 
+        {/* ✅ Native Banner Ad */}
+        <div className="w-full text-center my-4">
+          <div id="container-b186b4d93f13ebc324bc5c223d241aee" />
+          <Script
+            strategy="afterInteractive"
+            id="native-banner-ad"
+            async
+            data-cfasync="false"
+            src="//pl26853831.profitableratecpm.com/b186b4d93f13ebc324bc5c223d241aee/invoke.js"
+          />
         </div>
 
         {/* Footer */}
