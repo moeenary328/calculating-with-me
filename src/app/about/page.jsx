@@ -25,7 +25,7 @@ export default function AboutPage() {
             <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
               your writing with simple & Calculating with Me
             </p>
-            <h4 className="mt-7 max-w-xl mx-auto text-xl text-red-500">
+            <h4 className="mt-7 max-w-xl mx-auto text-xl text-purple-700">
               I am (Moeen) From Pakistan.
             </h4>
           </div>
