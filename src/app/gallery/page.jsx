@@ -1,22 +1,20 @@
 // app/gallery/page.js
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Gallery() {
   // Public folder se images
   const images = [
-    
-    // Yahan aur images add kar sakte hain
-    { id: 1, src: '/t1.jpg', title: 'tiktok little goal' },
+    { id: 1, src: '/t1.png', title: 'tiktok little goal' },
     { id: 2, src: '/t2.jpg', title: 'tiktok large goal' },
     { id: 3, src: '/t3.jpg', title: 'titok big goals' },
-    { id: 4, src: '/moeen.jpg', title: 'I,m moeen'  },
-    
+    { id: 4, src: '/moeen.jpg', title: 'I,m moeen' },
   ];
 
   const [showFirstAlert, setShowFirstAlert] = useState(false);
   const [showSecondAlert, setShowSecondAlert] = useState(false);
+  const [showAdAfterDownload, setShowAdAfterDownload] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
   // Direct image download function
@@ -37,6 +35,14 @@ export default function Gallery() {
     // Alerts band karo after download
     setShowFirstAlert(false);
     setShowSecondAlert(false);
+    
+    // Download ke baad ad show karo
+    setShowAdAfterDownload(true);
+    
+    // 5 seconds baad ad hide ho jaye
+    setTimeout(() => {
+      setShowAdAfterDownload(false);
+    }, 5000);
   };
 
   // Pehla alert show karne ka function
@@ -97,6 +103,39 @@ export default function Gallery() {
           </div>
         ))}
       </div>
+
+      {/* Adsterra Social Banner Ad - Always Visible */}
+      <div className="mt-8 text-center">
+        <div id="adsterra-social-banner" className="mx-auto" style={{ maxWidth: '728px', minHeight: '90px' }}>
+          {/* Adsterra Social Banner Ad yahan load hoga */}
+        </div>
+      </div>
+
+      {/* Download ke baad dikhne wala Ad */}
+      {showAdAfterDownload && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-4">
+            <h3 className="text-lg font-semibold text-center mb-4 text-gray-800 dark:text-white">
+              Thank you for downloading!
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
+              Please support us by viewing this ad
+            </p>
+            
+            {/* Additional ad space yahan add kar sakte hain */}
+            <div className="w-full h-60 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded">
+              <p className="text-gray-500">Ad space for future use</p>
+            </div>
+            
+            <button
+              onClick={() => setShowAdAfterDownload(false)}
+              className="w-full mt-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Pehla Alert - Welcome Message */}
       {showFirstAlert && selectedImage && (
@@ -194,6 +233,14 @@ export default function Gallery() {
           <p className="text-xs mt-1">Please add images to the public folder and update the code.</p>
         </div>
       )}
+
+      {/* ✅ Adsterra Social Banner Ads Script */}
+      <script 
+        type='text/javascript' 
+        src='//pl26853768.revenuecpmgate.com/d5/08/02/d508023ed9186569d65c5bd168ebd23a.js'
+        strategy="afterInteractive"
+        async
+      />
     </div>
   );
 }
