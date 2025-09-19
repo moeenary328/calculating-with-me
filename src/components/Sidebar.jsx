@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,18 +17,9 @@ export default function Sidebar() {
   const [openCategory, setOpenCategory] = useState('Finance');
   const [searchQuery, setSearchQuery] = useState('');
   const [hydrated, setHydrated] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  if (!hydrated) return null;
-
-  const toggleSidebar = () => setIsOpen(!isOpen);
-  const toggleCategory = (category) => {
-    setOpenCategory((prev) => (prev === category ? null : category));
-  };
-
+  // ✅ categories array ko filteredCategories se PEHLE define karo
   const categories = [
     {
       name: 'Finance',
@@ -90,6 +80,7 @@ export default function Sidebar() {
     },
   ];
 
+  // ✅ Ab filteredCategories categories ko use kar sakta hai
   const filteredCategories = categories.map((cat) => ({
     ...cat,
     items: cat.items.filter((item) =>
@@ -97,9 +88,38 @@ export default function Sidebar() {
     ),
   }));
 
+  useEffect(() => {
+    setHydrated(true);
+    
+    // Mobile detection
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth < 768) {
+        setIsOpen(false); // Mobile par sidebar automatically hide
+      }
+    };
+
+    // Initial check
+    checkIsMobile();
+
+    // Resize event listener
+    window.addEventListener('resize', checkIsMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  if (!hydrated) return null;
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+  const toggleCategory = (category) => {
+    setOpenCategory((prev) => (prev === category ? null : category));
+  };
+
   return (
-    <aside className={`h-screen sticky top-0 transition-all duration-300 bg-gray-900 text-white ${isOpen ? 'w-64' : 'w-20'}`}>
-      {/* Header */}
+    <aside className={`h-screen sticky top-0 transition-all duration-300 bg-gray-900 text-white ${isOpen ? 'w-64' : 'w-20'} ${isMobile ? 'hidden md:block' : ''}`}>
+      
+      {/* Toggle Button - Mobile par bhi show hoga */}
       <div className="flex justify-between items-center p-3">
         {isOpen && (
           <div className="flex items-center gap-2 text-gray-300 text-lg font-semibold">
@@ -112,7 +132,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Search */}
+      {/* Rest of the code same hai */}
       {isOpen && (
         <div className="px-3 pb-2">
           <div className="relative text-sm">
@@ -128,7 +148,6 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* Navigation */}
       <nav className="overflow-y-auto h-[calc(100vh-80px)] px-2 pb-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 space-y-1">
         {filteredCategories.map((category) =>
           category.items.length > 0 ? (
@@ -179,6 +198,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-
-
-
