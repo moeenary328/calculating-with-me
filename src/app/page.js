@@ -335,12 +335,12 @@ export default function HomePage() {
             </Link>
             
             <Link
-              href="/demo"
+              href="/tiktok"
               className="relative inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-purple-500/30 backdrop-blur-sm"
             >
               <span className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative z-10 flex items-center">
-                View Live Demo
+              Edward Starling
                 <FaUsers className="ml-2" />
               </span>
             </Link>

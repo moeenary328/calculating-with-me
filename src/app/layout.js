@@ -9,6 +9,7 @@ import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import Footer from '../components/Footer'
 import { usePathname } from 'next/navigation'
+import { FaRegFileCode } from 'react-icons/fa';
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -378,3 +379,6 @@ export default function RootLayout({ children }) {
 //     </html>
 //   )
 // }
+
+
+
