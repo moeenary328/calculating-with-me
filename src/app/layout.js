@@ -4,6 +4,7 @@
 import './globals.css'
 import Script from 'next/script'
 
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import Footer from '../components/Footer'
@@ -37,7 +38,7 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body className={`${isHomePage ? 'bg-gradient-to-br from-gray-950 via-black to-gray-950 text-white' : 'bg-white dark:bg-gray-950 text-black dark:text-white'}`}>
-        
+        <SpeedInsights />
         {/* Navbar - Show on all pages */}
         <Navbar />
 
